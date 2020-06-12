@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+# bootstrap.sh
+#	This script installs my basic setup for an Ubuntu laptop
+
+
+# hugo?
+
+# vscode?
+
+# docker?
+
+# golang?
+
+check_is_sudo() {
+	if [ "$EUID" -ne 0 ]; then
+		echo "Please run as root."
+		exit
+	fi
+}
+
+base_min() {
+	apt update || true
+	apt install -y \
+		apt-transport-https \
+		ca-certificates \
+		curl \
+		jq \
+		--no-install-recommends
+}
+
+main () {
+        check_is_sudo
+	base_min
+}
+
+main "$@"

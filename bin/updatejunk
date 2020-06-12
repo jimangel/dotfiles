@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -e
+
+help() {
+	echo "updatejunk - a simple script that makes installing/updating junk easier"
+}
+
+
+check_is_sudo() {
+	if [ "$EUID" -ne 0 ]; then
+		echo "Please run as root."
+		exit
+	fi
+}
+
+update_kubectl() {
+	echo
+	echo "Updating kubectl..."
+	echo
+	KUBERNETES_VERSION=$(curl -sSL https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+	curl -sSL "https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl" > /usr/local/bin/kubectl
+	chmod +x /usr/local/bin/kubectl
+	echo "kuebctl $(kubectl version --client --short)"
+}
+
+update_gimme() {
+	echo
+	echo "Updating gimme..."
+	curl -sSL "https://raw.githubusercontent.com/travis-ci/gimme/master/gimme" > /usr/local/bin/gimme
+	chmod +x /usr/local/bin/gimme
+        gimme stable > $HOME/.gimme-go
+	echo "gimme (go) stable installed"
+}
+
+# update_hugo
+# GO111MODULE="on" go get sigs.k8s.io/kind@v0.8.1
+# vscode?
+
+update() {
+	# update all the things
+        check_is_sudo
+	update_kubectl
+	update_gimme
+}
+
+main() {
+	local arg=$1
+	if [[ -n "$arg" ]]; then
+		help
+	else
+		update
+	fi
+}
+
+main "$@"
