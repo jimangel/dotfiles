@@ -28,6 +28,7 @@ base_min() {
 		ca-certificates \
 		curl \
 		jq \
+		vim \
 		--no-install-recommends
 }
 
