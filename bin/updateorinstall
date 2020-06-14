@@ -16,7 +16,6 @@ check_is_sudo() {
 update_kubectl() {
 	echo
 	echo "Updating kubectl..."
-	echo
 	KUBERNETES_VERSION=$(curl -sSL https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 	curl -sSL "https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl" > /usr/local/bin/kubectl
 	chmod +x /usr/local/bin/kubectl
@@ -36,17 +35,41 @@ update_gimme() {
 # GO111MODULE="on" go get sigs.k8s.io/kind@v0.8.1
 # vscode?
 
+update_vscode() {
+	echo
+	echo "Updating VScode..."
+	if ! hash code 2>/dev/null; then
+		curl -sSL "https://update.code.visualstudio.com/latest/linux-deb-x64/stable" -o vscode.deb
+		apt install ./vscode.deb
+		rm -rf vscode.deb
+	fi
+	# "Installing the .deb package will automatically install the apt repository and signing key to enable auto-updating using the system's package manager."
+	# future upgrades?
+	apt install --only-upgrade code
+}
+
+update_direnv() {
+	echo
+	echo "Updating direnv..."
+	if ! hash direnv 2>/dev/null; then
+		apt install direnv -f
+	fi
+	apt install --only-upgrade direnv
+}
+
 update() {
 	# update all the things
-        check_is_sudo
+    check_is_sudo
 	update_kubectl
 	update_gimme
+	update_vscode
 }
 
 main() {
 	local arg=$1
 	if [[ -n "$arg" ]]; then
-		help
+		check_is_sudo
+		$arg
 	else
 		update
 	fi
