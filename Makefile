@@ -21,6 +21,10 @@ bin: ## Installs the bin directory files.
 		sudo ln -sf $$file /usr/local/bin/$$f; \
 	done;
 
+.PHONY: vscode
+vscode: ## Installs the vs code and settings
+	ln -sf $(CURDIR)/vscode/settings.json $$HOME/.config/Code/User/settings.json
+
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

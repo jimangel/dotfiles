@@ -5,7 +5,6 @@ help() {
 	echo "updatejunk - a simple script that makes installing/updating junk easier"
 }
 
-
 check_is_sudo() {
 	if [ "$EUID" -ne 0 ]; then
 		echo "Please run as root."
@@ -27,13 +26,36 @@ update_gimme() {
 	echo "Updating gimme..."
 	curl -sSL "https://raw.githubusercontent.com/travis-ci/gimme/master/gimme" > /usr/local/bin/gimme
 	chmod +x /usr/local/bin/gimme
-        gimme stable > $HOME/.gimme-go
+    gimme stable > $HOME/.gimme-go
 	echo "gimme (go) stable installed"
 }
 
-# update_hugo
-# GO111MODULE="on" go get sigs.k8s.io/kind@v0.8.1
-# vscode?
+update_hugo() {
+#CUR_VERSION="$(hugo version | cut -d'v' -f2 | cut -c 3-5)"
+#NEW_VERSION="$(curl -s https://api.github.com/repos/gohugoio/hugo/releases/latest | grep tag_name | cut -d'.' -f2 | cut -d'"' -f1)"
+#echo "Current Version: $CUR_VERSION => New Version: $NEW_VERSION"
+#
+#if [ "$NEW_VERSION" -ne "$CUR_VERSION" ]; then
+	echo
+	echo "Updating hugo..."
+	LATEST_HUGO=$(curl -s https://api.github.com/repos/gohugoio/hugo/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+	curl -sSL "https://github.com/gohugoio/hugo/releases/download/${LATEST_HUGO}/hugo_extended_${LATEST_HUGO//v}_Linux-64bit.tar.gz" > hugo_latest.tar.gz
+	# requires sudo
+	tar -xvzf hugo_latest.tar.gz hugo
+	chmod +x hugo
+	mv hugo /usr/local/bin/hugo
+	rm hugo_latest.tar.gz
+	echo "hugo installed"
+}
+
+update_kind() {
+	echo
+	echo "Updating kind...."
+	LATEST_KIND=$(curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+	curl -sSL "https://github.com/kubernetes-sigs/kind/releases/download/${LATEST_KIND}/kind-linux-amd64" > kind
+	chmod +x kind
+	mv kind /usr/local/bin/kind
+}
 
 update_vscode() {
 	echo
@@ -57,12 +79,54 @@ update_direnv() {
 	apt install --only-upgrade direnv
 }
 
+install_docker() {
+	if ! hash docker 2>/dev/null; then
+		# requires sudo
+		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+		add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+		apt update
+		apt install docker-ce -y
+		echo
+		echo "add user to docker group with:"
+		echo "sudo usermod -aG docker ${USER}"
+		echo
+		# clean
+		# sudo apt remove docker docker-engine docker.io containerd runc
+	fi
+	# future updates will be handled with apt-update
+}
+
+update_helm() {
+	echo
+	echo "Updating helm...."
+	# helm version should be manually set untill v2 is deprecated.
+	echo "UPDATE HELM VERSION: https://github.com/helm/helm/releases"
+	LATEST_HELM="v3.2.3"
+	curl -sSL "https://get.helm.sh/helm-${LATEST_HELM}-linux-amd64.tar.gz" > helm_latest.tar.gz
+	# requires sudo
+	tar -xvzf helm_latest.tar.gz linux-amd64/helm
+	chmod +x linux-amd64/helm
+	mv linux-amd64/helm /usr/local/bin/helm
+	rm -rf linux-amd64
+	rm helm_latest.tar.gz
+	echo "helm installed"
+}
+
 update() {
 	# update all the things
     check_is_sudo
 	update_kubectl
 	update_gimme
+	update_hugo
+	update_kind
 	update_vscode
+	update_direnv
+	install_docker
+	update_helm
+	# use apt for everything else
+	apt update -y
+	apt upgrade -y
+
 }
 
 main() {

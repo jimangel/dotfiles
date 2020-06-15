@@ -1,0 +1,9 @@
+{
+  "telemetry.enableTelemetry": false,
+  "go.formatTool": "goimports",
+  "go.useLanguageServer": true,
+  "go.toolsEnvVars": {
+    "GO111MODULE": "on",
+    "GOFLAGS": "-mod=vendor"
+  },
+}   
