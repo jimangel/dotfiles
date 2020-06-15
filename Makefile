@@ -1,7 +1,7 @@
 SHELL := bash
 
 .PHONY: all
-all: bin dotfiles ## Installs the bin and etc directory files and the dotfiles.
+all: bin dotfiles vscode ## Installs the bin and etc directory files and the dotfiles.
 
 
 .PHONY: dotfiles
@@ -22,7 +22,8 @@ bin: ## Installs the bin directory files.
 	done;
 
 .PHONY: vscode
-vscode: ## Installs the vs code and settings
+vscode: ## Installs vscode and settings
+	$(CURDIR)/vscode/setup-vscode.sh \
 	ln -sf $(CURDIR)/vscode/settings.json $$HOME/.config/Code/User/settings.json
 
 .PHONY: help
