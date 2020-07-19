@@ -7,8 +7,9 @@ if ! hash code 2>/dev/null; then
 	rm -rf vscode.deb
 fi
 
-# install golang extension
+# install extensions
 code --install-extension golang.go
+code --install-extension hashicorp.terraform
 
 # install golang tools
 go get github.com/mdempsky/gocode

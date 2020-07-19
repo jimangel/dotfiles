@@ -21,6 +21,19 @@ update_kubectl() {
 	echo "kuebctl $(kubectl version --client --short)"
 }
 
+update_gcloud() {
+	echo
+	if ! hash gcloud 2>/dev/null; then
+		echo "Updating gcloud..."
+		# requires sudo
+		echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+		curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+		apt update
+		apt install google-cloud-sdk -y
+	fi
+	# future updates will be handled with apt-update
+}
+
 update_gimme() {
 	echo
 	echo "Updating gimme..."
@@ -55,6 +68,18 @@ update_kind() {
 	curl -sSL "https://github.com/kubernetes-sigs/kind/releases/download/${LATEST_KIND}/kind-linux-amd64" > kind
 	chmod +x kind
 	mv kind /usr/local/bin/kind
+}
+
+
+update_terraform() {
+	echo
+	echo "Updating terraform...."
+	LATEST_TERRAFORM=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+	curl -sSL "https://releases.hashicorp.com/terraform/${LATEST_TERRAFORM//v}/terraform_${LATEST_TERRAFORM//v}_linux_amd64.zip" -o terraform.zip
+	unzip terraform.zip
+	rm terraform.zip
+	chmod +x terraform
+	mv terraform /usr/local/bin/terraform
 }
 
 update_vscode() {
@@ -112,10 +137,23 @@ update_helm() {
 	echo "helm installed"
 }
 
+update_doctl() {
+	echo
+	echo "Updating doctl...."
+	LATEST_DOCTL=$(curl -s https://api.github.com/repos/digitalocean/doctl/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+	curl -sSL "https://github.com/digitalocean/doctl/releases/download/${LATEST_DOCTL}/doctl-${LATEST_DOCTL//v}-linux-amd64.tar.gz" > doctl_latest.tar.gz
+	tar -xvzf doctl_latest.tar.gz doctl
+	chmod +x doctl
+	mv doctl /usr/local/bin/doctl
+	rm doctl_latest.tar.gz
+	echo "doctl installed"
+}
+
 update() {
 	# update all the things
     check_is_sudo
 	update_kubectl
+	update_gcloud
 	update_gimme
 	update_hugo
 	update_kind
@@ -123,6 +161,7 @@ update() {
 	update_direnv
 	install_docker
 	update_helm
+	update_doctl
 	# use apt for everything else
 	apt update -y
 	apt upgrade -y
