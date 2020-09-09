@@ -39,7 +39,6 @@ update_gimme() {
 	echo "Updating gimme..."
 	curl -sSL "https://raw.githubusercontent.com/travis-ci/gimme/master/gimme" > /usr/local/bin/gimme
 	chmod +x /usr/local/bin/gimme
-    gimme stable > $HOME/.gimme-go
 	echo "gimme (go) stable installed"
 }
 

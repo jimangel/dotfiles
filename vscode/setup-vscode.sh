@@ -3,7 +3,8 @@ set -e
 
 if ! hash code 2>/dev/null; then
 	curl -sSL "https://update.code.visualstudio.com/latest/linux-deb-x64/stable" -o vscode.deb
-	apt install ./vscode.deb
+        sudo apt install libx11-xcb1
+	sudo apt install ./vscode.deb -y
 	rm -rf vscode.deb
 fi
 
