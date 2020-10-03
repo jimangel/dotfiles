@@ -86,12 +86,12 @@ update_vscode() {
 	echo "Updating VScode..."
 	if ! hash code 2>/dev/null; then
 		curl -sSL "https://update.code.visualstudio.com/latest/linux-deb-x64/stable" -o vscode.deb
-		apt install ./vscode.deb
+		apt install ./vscode.deb -y
 		rm -rf vscode.deb
 	fi
 	# "Installing the .deb package will automatically install the apt repository and signing key to enable auto-updating using the system's package manager."
 	# future upgrades?
-	apt install --only-upgrade code
+	apt install --only-upgrade code -y
 }
 
 update_direnv() {
