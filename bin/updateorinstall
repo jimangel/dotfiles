@@ -150,7 +150,8 @@ update_doctl() {
 
 update() {
 	# update all the things
-    check_is_sudo
+        check_is_sudo
+        update_terraform
 	update_kubectl
 	update_gcloud
 	update_gimme

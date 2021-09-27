@@ -3,6 +3,22 @@ My dotfiles
 
 If you plan to fork this, know that there's a static email set in `.gitconfig` and the Helm version is static in `bin/updateorinstall`. Lastly, this is currently only tested on Ubuntu (20.04).
 
+
+## Prereqs
+
+```
+sudo apt install git make curl
+```
+
+Clone this repository and change into it.
+
+```
+git clone https://github.com/jimangel/dotfiles.git
+cd dotfiles
+```
+
+## Install
+
 ```
 # Sets up all the bin and dot stuff
 make
